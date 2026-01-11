@@ -1,0 +1,14 @@
+export const NonMuiColors = Object.freeze({
+  WHITE: "#FFFFFF",
+  FADE: "#FFFFFFDD",
+  FADE_MEDIUM: "#FFFFFF99",
+  BLACK: "#000000",
+  BLACK_FADE_MEDIUM: "#00000088",
+  PRIMARY: "#460C0C",
+  SECONDARY: "#E4D4C8",
+  RED: "#E7020E",
+  DARK_BROWN: "#151213",
+  CREME: "#FCF7F3",
+  CREME_DARK: "rgb(255 237 213)",
+  CREME_DARK_FADE: "rgb(255 237 213)"
+})

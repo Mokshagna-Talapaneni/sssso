@@ -1,0 +1,8 @@
+#Don't Send the Build to Repo
+build
+
+#Don't Send the node_modules to Repo
+node_modules
+
+#For MAC
+.DS_Store

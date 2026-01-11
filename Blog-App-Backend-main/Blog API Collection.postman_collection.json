@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "7f4f77f6-8ade-42c9-a600-fe846e4e0c5c",
+		"name": "Blog API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29283935",
+		"_collection_link": "https://wannebe-develloper.postman.co/workspace/Spring~01688cd2-3acc-4c1d-9c39-f1105bcdee7e/collection/29283935-7f4f77f6-8ade-42c9-a600-fe846e4e0c5c?action=share&source=collection_link&creator=29283935"
+	},
+	"item": [
+		{
+			"name": "Get All Blogs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/blogs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blogs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Blog By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/blogs/68753b2a52b0b6d8fda4b37b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blogs",
+						"68753b2a52b0b6d8fda4b37b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Blog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Example Blog Title\",\n    \"content\": \"This is the blog post content.\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/blogs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blogs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Blog",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Updated Blog Title\",\n    \"content\": \"Updated blog post content.\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/blogs/68753b2a52b0b6d8fda4b37b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blogs",
+						"68753b2a52b0b6d8fda4b37b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Blog",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/blogs/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"blogs",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

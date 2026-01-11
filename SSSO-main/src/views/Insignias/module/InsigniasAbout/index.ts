@@ -1,0 +1,1 @@
+export { InsigniasSection } from "./Component"
