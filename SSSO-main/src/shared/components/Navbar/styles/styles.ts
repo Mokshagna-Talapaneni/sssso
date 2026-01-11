@@ -54,7 +54,7 @@ export const NavMenuItemsContainer = styled("div", {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  gap: pxToRem(32),
+  gap: pxToRem(12),
   [theme.breakpoints.down("lg")]: {
     display: "none"
   },
