@@ -25,9 +25,19 @@ const Login = lazy(() => import("@views/Dashboard/module/sections/Auth/Login"));
 const RegisterAdmin = lazy(() => import("@views/Dashboard/module/sections/Auth/RegisterAdmin"));
 
 // ---- Auth Guard ----
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+// ---- Role-Based Auth Guard ----
+const ProtectedRoute = ({ children, requireSuperAdmin = false }: { children: JSX.Element, requireSuperAdmin?: boolean }) => {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/admin/login" replace />;
+  const role = localStorage.getItem("role"); 
+
+  if (!token) return <Navigate to="/admin/login" replace />;
+
+  if (requireSuperAdmin && role !== "superadmin") {
+    alert("Sairam. This area is reserved for Superadmins only.");
+    return <Navigate to="/home" replace />;
+  }
+
+  return children;
 };
 
 // ---- Routes ----
@@ -73,13 +83,13 @@ export const routes = [
     children: [
       { path: "login", element: <Login /> },
       {
-        path: "register",
-        element: (
-          <ProtectedRoute>
-            <RegisterAdmin />
-          </ProtectedRoute>
-        )
-      },
+  path: "register",
+  element: (
+    <ProtectedRoute requireSuperAdmin={true}>
+      <RegisterAdmin />
+    </ProtectedRoute>
+  )
+},
       {
         path: "blog-approval",
         element: (
