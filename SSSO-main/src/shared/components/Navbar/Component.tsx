@@ -37,6 +37,15 @@ const Component: React.FC<NavbarComponent> = ({
 }: NavbarComponent) => {
   const { pathname } = useLocation()
 
+  // ✅ Helper to handle logout logic
+  const handleNavClick = (item: string, e: React.MouseEvent) => {
+    if (item === "logout") {
+      e.preventDefault()
+      localStorage.clear()
+      window.location.href = "/home" // Hard refresh to reset Navbar state
+    }
+  }
+
   const drawerComponent = React.useMemo(
     () => (
       <DrawerContainer>
@@ -45,6 +54,7 @@ const Component: React.FC<NavbarComponent> = ({
             NavConfig[item]?.children!?.length > 0 ? (
               <NavLinkButtonWidthChild
                 id={item}
+                key={item}
                 type="button"
                 className={`nav-links ${NavConfig[item]?.children?.find((config) => pathname === config.path) ? "nav-links-active" : ""}`}
                 onClick={(event) => {
@@ -57,9 +67,13 @@ const Component: React.FC<NavbarComponent> = ({
               </NavLinkButtonWidthChild>
             ) : (
               <NavLinkButton
+                key={item}
                 to={NavConfig[item].path}
                 className={`nav-links ${pathname === NavConfig[item].path ? "nav-links-active" : ""}`}
-                onClick={toggleDrawer.bind(this)}
+                onClick={(e) => {
+                  handleNavClick(item, e)
+                  toggleDrawer()
+                }}
               >
                 <Typography variant="h2Bold">
                   {NavConfig[item].label}
@@ -70,6 +84,7 @@ const Component: React.FC<NavbarComponent> = ({
         {currentConfig &&
           NavConfig?.[currentConfig as string]?.children!?.map((item) => (
             <NavLinkButton
+              key={item.id}
               to={item.path}
               className={`nav-links ${pathname === item.path ? "nav-links-active" : ""}`}
               onClick={toggleDrawer.bind(this)}
@@ -117,6 +132,7 @@ const Component: React.FC<NavbarComponent> = ({
                   NavConfig[item]?.children!?.length > 0 ? (
                     <NavLinkButtonWidthChild
                       id={item}
+                      key={item}
                       type="button"
                       aria-owns={openPopover ? "mouse-over-popover" : undefined}
                       aria-haspopup="true"
@@ -130,11 +146,13 @@ const Component: React.FC<NavbarComponent> = ({
                   ) : (
                     <NavLinkButton
                       id={item}
+                      key={item}
                       type="button"
                       to={NavConfig[item].path}
                       aria-owns={openPopover ? "mouse-over-popover" : undefined}
                       aria-haspopup="true"
                       className={`${pathname === NavConfig[item].path ? "nav-links-active" : ""}`}
+                      onClick={(e) => handleNavClick(item, e)}
                     >
                       <Typography variant="h4Medium">
                         {NavConfig[item].label}
@@ -161,7 +179,7 @@ const Component: React.FC<NavbarComponent> = ({
                       0 &&
                     NavConfig!?.[currentConfig as string]!?.children?.map(
                       (item, index) => (
-                        <>
+                        <React.Fragment key={item.id}>
                           <NavLinkButton
                             id={"sub-menu-" + item.id}
                             to={item.path}
@@ -182,7 +200,7 @@ const Component: React.FC<NavbarComponent> = ({
                             NavConfig?.[currentConfig as string]?.children!
                               ?.length -
                               1 && <Divider orientation="horizontal" />}
-                        </>
+                        </React.Fragment>
                       )
                     )}
                 </PopoverContainer>
@@ -200,7 +218,7 @@ const Component: React.FC<NavbarComponent> = ({
                 open={open}
                 onClose={toggleDrawer}
                 ModalProps={{
-                  keepMounted: true // Better open performance on mobile.
+                  keepMounted: true 
                 }}
               >
                 {drawerComponent}

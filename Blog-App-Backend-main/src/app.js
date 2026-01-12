@@ -20,5 +20,9 @@ app.use("/api/blogs", blogRoutes);   // ⭐ THIS WAS MISSING
 app.get("/", (req, res) => {
   res.send("Backend running 🚀");
 });
+app.use(cors({
+  origin: ["https://your-frontend.vercel.app"],
+  credentials: true
+}));
 
 export default app;

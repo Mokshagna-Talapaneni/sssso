@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
-const authMiddleware = (req, res, next) => {
+// ✅ Changed to named export
+export const authMiddleware = (req, res, next) => {
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith("Bearer ")) {
@@ -11,11 +12,20 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, role }
+    req.user = decoded; // This contains id and role from the token
     next();
-  } catch {
-    res.status(401).json({ message: "Invalid token" });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
-export default authMiddleware;
+// ✅ Added the superAdminOnly check
+export const superAdminOnly = (req, res, next) => {
+  if (req.user && req.user.role === "superadmin") {
+    next();
+  } else {
+    res.status(403).json({ 
+      message: "Sairam. Access denied. This action requires Super Admin privileges." 
+    });
+  }
+};
