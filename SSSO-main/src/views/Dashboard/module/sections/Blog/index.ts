@@ -1,1 +1,2 @@
-export { default as BlogSection } from "./Component";
+// src/views/Dashboard/module/sections/Blog/index.ts
+export { default } from "./Component";
