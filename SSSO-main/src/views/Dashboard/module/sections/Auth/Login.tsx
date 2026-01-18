@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { 
   Container, TextField, Button, Typography, Paper, Box, Alert, InputAdornment, IconButton 
 } from "@mui/material";
@@ -23,7 +24,7 @@ const Login: React.FC = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5001/api/auth/login", {
+      const res = await fetch('${API_BASE_URL}/auth/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),

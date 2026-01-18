@@ -6,3 +6,6 @@ node_modules
 
 #For MAC
 .DS_Store
+
+
+.env

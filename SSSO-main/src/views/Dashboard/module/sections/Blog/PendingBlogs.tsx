@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import {
   Container, Typography, Button, Card, CardContent, Stack
 } from "@mui/material";
@@ -8,7 +9,7 @@ const PendingBlogs = () => {
   const token = localStorage.getItem("token");
 
   const fetchPending = async () => {
-    const res = await fetch("http://localhost:5001/api/blogs/pending", {
+    const res = await fetch("${API_BASE_URL}/blogs/pending", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -18,7 +19,7 @@ const PendingBlogs = () => {
   };
 
   const publishBlog = async (id: string) => {
-    await fetch(`http://localhost:5001/api/blogs/${id}/publish`, {
+    await fetch(`${API_BASE_URL}/blogs/${id}/publish`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`
@@ -28,7 +29,7 @@ const PendingBlogs = () => {
   };
 
   const deleteBlog = async (id: string) => {
-    await fetch(`http://localhost:5001/api/blogs/${id}`, {
+    await fetch(`${API_BASE_URL}/blogs/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`

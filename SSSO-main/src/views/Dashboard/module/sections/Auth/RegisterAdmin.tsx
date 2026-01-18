@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { 
   Container, TextField, Button, Typography, Paper, Box, Alert, 
   Table, TableBody, TableCell, TableContainer, TableHead, 
@@ -20,7 +21,7 @@ const RegisterAdmin: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/auth/users", {
+      const res = await fetch('${API_BASE_URL}/auth/users', {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
       if (res.ok) {
@@ -34,7 +35,7 @@ const RegisterAdmin: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5001/api/auth/register-admin", {
+    const res = await fetch('${API_BASE_URL}/auth/register-admin', {
       method: "POST",
       headers: { 
         "Content-Type": "application/json", 
@@ -104,7 +105,7 @@ const RegisterAdmin: React.FC = () => {
                         sx={{ color: NonMuiColors.RED }} 
                         onClick={async () => { 
                           if(window.confirm("Remove this admin?")) { 
-                            await fetch(`http://localhost:5001/api/auth/users/${user._id}`, { 
+                            await fetch(`${API_BASE_URL}/auth/users/${user._id}`, { 
                               method: "DELETE", 
                               headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } 
                             }); 

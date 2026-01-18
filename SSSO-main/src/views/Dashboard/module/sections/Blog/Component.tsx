@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { 
   Typography, 
   CircularProgress, 
@@ -41,7 +42,7 @@ const Component: React.FC = () => {
 
   const fetchBlogs = () => {
     setLoading(true);
-    fetch("http://localhost:5001/api/blogs")
+    fetch("${API_BASE_URL}/blogs")
       .then((res) => res.json())
       .then((data) => {
         if (userRole === "superadmin") {
@@ -70,7 +71,7 @@ const Component: React.FC = () => {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        const response = await fetch(`http://localhost:5001/api/blogs/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
           method: "DELETE",
         });
         if (response.ok) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { 
   Typography, Button, Box, CircularProgress, IconButton, Grid, Chip, Paper 
 } from "@mui/material";
@@ -26,7 +27,7 @@ const AdminBlogSection: React.FC = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5001/api/blogs");
+      const res = await fetch("${API_BASE_URL}/blogs");
       const data = await res.json();
       setBlogs(data);
     } catch (err) {
@@ -41,7 +42,7 @@ const AdminBlogSection: React.FC = () => {
 
   const handleApprove = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/blogs/approve/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/blogs/approve/${id}`, {
         method: "PATCH",
       });
       if (res.ok) {
@@ -58,7 +59,7 @@ const AdminBlogSection: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this blog?")) {
       try {
-        const res = await fetch(`http://localhost:5001/api/blogs/${id}`, { method: "DELETE" });
+        const res = await fetch(`${API_BASE_URL}/blogs/${id}`, { method: "DELETE" });
         if (res.ok) {
           setBlogs(blogs.filter(blog => blog._id !== id));
         } else {

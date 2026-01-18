@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { Box, Container, Typography, Paper, Button, TextField, Divider, Stack, Card } from "@mui/material";
 // import { NonMuiColors } from "../../../../../config/theme/theme";
 
@@ -7,7 +8,7 @@ const ReviewBlogs: React.FC = () => {
   const [editingBlog, setEditingBlog] = useState<any>(null);
 
   const fetchPending = async () => {
-    const res = await fetch("http://localhost:5001/api/blogs/pending", {
+    const res = await fetch("${API_BASE_URL}/blogs/pending", {
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
     });
     const data = await res.json();
@@ -17,7 +18,7 @@ const ReviewBlogs: React.FC = () => {
   useEffect(() => { fetchPending(); }, []);
 
   const handlePublish = async () => {
-    const res = await fetch(`http://localhost:5001/api/blogs/approve-edit/${editingBlog._id}`, {
+    const res = await fetch(`${API_BASE_URL}/blogs/approve-edit/${editingBlog._id}`, {
       method: "PATCH",
       headers: { 
         "Content-Type": "application/json",

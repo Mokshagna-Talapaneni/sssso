@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { 
   Container, TextField, Button, Typography, Box, Paper, Grid, Alert, CircularProgress, MenuItem 
 } from "@mui/material";
@@ -32,7 +33,7 @@ const AdminForm: React.FC = () => {
   useEffect(() => {
     if (editId) {
       setFetching(true);
-      fetch(`http://localhost:5001/api/blogs/${editId}`)
+      fetch(`${API_BASE_URL}/blogs/${editId}`)
         .then((res) => res.json())
         .then((data) => {
           const formattedDate = data.startDate ? new Date(data.startDate).toISOString().split('T')[0] : "";
@@ -71,8 +72,8 @@ const AdminForm: React.FC = () => {
       const token = localStorage.getItem("token");
       const method = editId ? "PATCH" : "POST";
       const url = editId 
-        ? `http://localhost:5001/api/blogs/${editId}` 
-        : "http://localhost:5001/api/blogs";
+        ? `${API_BASE_URL}/blogs/${editId}` 
+        : '${API_BASE_URL}/blogs';
 
       const res = await fetch(url, {
         method: method,

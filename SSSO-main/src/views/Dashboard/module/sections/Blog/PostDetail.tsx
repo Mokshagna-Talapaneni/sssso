@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "@shared/config/apiConfig";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   Typography, CircularProgress, Container, Box, Button, 
@@ -21,7 +22,7 @@ const PostDetail: React.FC = () => {
 
   const fetchPost = () => {
     setLoading(true);
-    fetch(`http://localhost:5001/api/blogs/${id}`)
+    fetch(`${API_BASE_URL}/blogs/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (userRole === "superadmin" || data.status === "approved" || !data.status) {
@@ -39,7 +40,7 @@ const PostDetail: React.FC = () => {
   }, [id, userRole]);
 
   const handleApprove = async () => {
-    const res = await fetch(`http://localhost:5001/api/blogs/approve/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/blogs/approve/${id}`, {
       method: "PATCH"
     });
     if (res.ok) {
