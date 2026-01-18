@@ -22,7 +22,7 @@ import MenuIcon from "@mui/icons-material/Menu"
 import CloseIcon from "@mui/icons-material/Close"
 import NavMenuLogo from "@assets/image/ssso-logo-dark.png"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { useLocation } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 
 const Component: React.FC<NavbarComponent> = ({
   navbarList,
@@ -36,6 +36,10 @@ const Component: React.FC<NavbarComponent> = ({
   }
 }: NavbarComponent) => {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+
+  // ✅ Get Role to verify Superadmin
+  const userRole = localStorage.getItem("role")
 
   // ✅ Helper to handle logout logic
   const handleNavClick = (item: string, e: React.MouseEvent) => {
@@ -49,6 +53,18 @@ const Component: React.FC<NavbarComponent> = ({
   const drawerComponent = React.useMemo(
     () => (
       <DrawerContainer>
+        {/* ✅ Mobile: Blog Approval Link for Superadmin - White & No Border */}
+        {userRole === "superadmin" && (
+          <NavLinkButton
+            to="/admin/blog-approval"
+            className={`nav-links ${pathname === "/admin/blog-approval" ? "nav-links-active" : ""}`}
+            onClick={toggleDrawer}
+            style={{ color: '#FFFFFF' }}
+          >
+            <Typography variant="h2Bold">Blog Approval</Typography>
+          </NavLinkButton>
+        )}
+
         {!currentConfig &&
           navbarList.map((item) =>
             NavConfig[item]?.children!?.length > 0 ? (
@@ -107,7 +123,7 @@ const Component: React.FC<NavbarComponent> = ({
         </IconButton>
       </DrawerContainer>
     ),
-    [NavConfig, navbarList, currentConfig, pathname]
+    [NavConfig, navbarList, currentConfig, pathname, userRole]
   )
 
   const hasChildren = React.useMemo(() => {
@@ -128,6 +144,18 @@ const Component: React.FC<NavbarComponent> = ({
               </LogoWrapper>
 
               <NavMenuItemsContainer>
+                {/* ✅ Desktop: Blog Approval Link for Superadmin - White & No Border */}
+                {userRole === "superadmin" && (
+                  <NavLinkButton
+                    to="/admin/blog-approval"
+                    className={`${pathname === "/admin/blog-approval" ? "nav-links-active" : ""}`}
+                  >
+                    <Typography variant="h4Medium" sx={{ color: '#FFFFFF' }}>
+                      Blog Approval
+                    </Typography>
+                  </NavLinkButton>
+                )}
+
                 {navbarList.map((item) =>
                   NavConfig[item]?.children!?.length > 0 ? (
                     <NavLinkButtonWidthChild

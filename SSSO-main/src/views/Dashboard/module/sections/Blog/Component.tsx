@@ -5,7 +5,6 @@ import {
   Box, 
   Button, 
   IconButton, 
-  Grid, 
   Chip 
 } from "@mui/material";
 import { BlogContainer, BlogGrid, BlogCard } from "./styled";
@@ -16,7 +15,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { OutlinedButtonTransparent } from "@views/Dashboard/styles/styled";
 import { useNavigate } from "react-router-dom";
 
-// 1. Define the Interface to include your new fields
 interface IBlog {
   _id: string;
   title: string;
@@ -27,6 +25,7 @@ interface IBlog {
   contactPerson?: string;
   designation?: string;
   phoneNumber?: string;
+  status?: string;
   createdAt: string;
 }
 
@@ -34,14 +33,18 @@ const Component: React.FC = () => {
   const [blogs, setBlogs] = useState<IBlog[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const userRole = localStorage.getItem("role");
 
-  // 2. Fetch Data from Backend (Port 5001)
   const fetchBlogs = () => {
     setLoading(true);
     fetch("http://localhost:5001/api/blogs")
       .then((res) => res.json())
       .then((data) => {
-        setBlogs(data);
+        if (userRole === "superadmin") {
+          setBlogs(data);
+        } else {
+          setBlogs(data.filter((blog: IBlog) => blog.status === "approved" || !blog.status));
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -52,21 +55,17 @@ const Component: React.FC = () => {
 
   useEffect(() => {
     fetchBlogs();
-  }, []);
+  }, [userRole]);
 
-  // 3. Handle Delete functionality
   const handleDelete = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); // Prevents navigating to detail page when clicking delete
+    e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         const response = await fetch(`http://localhost:5001/api/blogs/${id}`, {
           method: "DELETE",
         });
         if (response.ok) {
-          // Refresh the list after successful deletion
           setBlogs(blogs.filter(blog => blog._id !== id));
-        } else {
-          alert("Failed to delete the post.");
         }
       } catch (error) {
         console.error("Error deleting:", error);
@@ -84,101 +83,98 @@ const Component: React.FC = () => {
 
   return (
     <BlogContainer>
-      {/* Header Section */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Box>
-          <Typography variant="h4Bold" color="primary">Latest Updates</Typography>
+          {/* <Typography variant="h4Bold" color="primary">Latest Updates</Typography> */}
           <Typography variant="h1Bold">Events & Activity Blogs</Typography>
         </Box>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => navigate("/blog/write")}
-          sx={{ borderRadius: '20px', px: 4 }}
-        >
-           + Write New Event
-        </Button>
+        {userRole && (
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => navigate("/blog/write")}
+            sx={{ borderRadius: '20px', px: 4 }}
+          >
+             + Write New Event
+          </Button>
+        )}
       </Box>
       
-      {/* Grid Section */}
       <BlogGrid>
         {blogs.length === 0 ? (
           <Typography variant="h3" sx={{ mt: 4, textAlign: 'center', width: '100%' }}>
-            No events found. Click "Write New Event" to get started!
+            No events found.
           </Typography>
         ) : (
           blogs.map((blog) => (
-            <BlogCard key={blog._id} sx={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            <BlogCard key={blog._id} sx={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
               
-              {/* Event Image */}
+              {userRole === "superadmin" && (
+                <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 10 }}>
+                  <Chip 
+                    label={blog.status === "approved" ? "Approved" : "Pending Approval"} 
+                    color={blog.status === "approved" ? "success" : "warning"}
+                    size="small"
+                  />
+                </Box>
+              )}
+
               {blog.imageUrl && (
                 <Box 
                   component="img"
                   src={blog.imageUrl}
                   alt={blog.title}
-                  sx={{ 
-                    width: '100%', 
-                    height: '200px', 
-                    objectFit: 'cover', 
-                    borderRadius: '8px',
-                    mb: 2 
-                  }}
+                  sx={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px', mb: 2 }}
                 />
               )}
 
-              {/* Title & Delete Icon */}
-              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                <Typography variant="h3Bold" color="primary" sx={{ mb: 1 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
+                {/* ✅ FIX: Title Overflow handled with line clamping */}
+                <Typography 
+                  variant="h3Bold" 
+                  color="primary" 
+                  sx={{ 
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    minHeight: '3.6rem', // Ensures card heights stay consistent
+                    lineHeight: '1.8rem'
+                  }}
+                >
                   {blog.title}
                 </Typography>
-                <IconButton 
-                  size="small" 
-                  color="error" 
-                  onClick={(e) => handleDelete(e, blog._id)}
-                  sx={{ backgroundColor: 'rgba(255,0,0,0.05)', ml: 1 }}
-                >
-                  <DeleteOutlineIcon />
-                </IconButton>
+                {userRole && (
+                  <IconButton 
+                    size="small" 
+                    color="error" 
+                    onClick={(e) => handleDelete(e, blog._id)}
+                    sx={{ backgroundColor: 'rgba(255,0,0,0.05)', ml: 1 }}
+                  >
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                )}
               </Box>
 
-              {/* Event Metadata (Date & Location) */}
               <Box display="flex" gap={1} mb={2} flexWrap="wrap">
                 {blog.startDate && (
-                  <Chip 
-                    icon={<CalendarMonthIcon fontSize="small" />} 
-                    label={new Date(blog.startDate).toLocaleDateString()} 
-                    size="small" 
-                    variant="outlined" 
-                  />
+                  <Chip icon={<CalendarMonthIcon fontSize="small" />} label={new Date(blog.startDate).toLocaleDateString()} size="small" variant="outlined" />
                 )}
                 {blog.district && (
-                  <Chip 
-                    icon={<LocationOnIcon fontSize="small" />} 
-                    label={blog.district} 
-                    size="small" 
-                    variant="outlined" 
-                  />
+                  <Chip icon={<LocationOnIcon fontSize="small" />} label={blog.district} size="small" variant="outlined" />
                 )}
               </Box>
 
-              {/* Content Preview */}
-              <Typography variant="h4" className="preview-text" sx={{ mb: 3, flexGrow: 1 }}>
-                {blog.content.length > 120 ? `${blog.content.substring(0, 120)}...` : blog.content}
+              <Typography variant="h4" sx={{ mb: 3, flexGrow: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                {blog.content}
               </Typography>
 
-              {/* Footer Actions */}
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <OutlinedButtonTransparent to={`/blog/${blog._id}`}>
                   <Typography variant="h4Medium">Read Full Story</Typography>
                   <ArrowForwardIcon sx={{ ml: 1 }} />
                 </OutlinedButtonTransparent>
-                
-                {/* Small indicator for contact person availability */}
-                {blog.contactPerson && (
-                  <Typography variant="caption" color="text.secondary">
-                    Contact: {blog.contactPerson}
-                  </Typography>
-                )}
               </Box>
             </BlogCard>
           ))
