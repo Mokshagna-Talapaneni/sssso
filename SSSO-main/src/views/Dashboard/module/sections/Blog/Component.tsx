@@ -5,7 +5,9 @@ import {
   Box, 
   Button, 
   IconButton, 
-  Chip 
+  Chip,
+  Tabs,
+  Tab 
 } from "@mui/material";
 import { BlogContainer, BlogGrid, BlogCard } from "./styled";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -26,12 +28,14 @@ interface IBlog {
   designation?: string;
   phoneNumber?: string;
   status?: string;
+  category: string; // ✅ Added category to interface
   createdAt: string;
 }
 
 const Component: React.FC = () => {
   const [blogs, setBlogs] = useState<IBlog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("One Time Activity"); // ✅ State for tabs
   const navigate = useNavigate();
   const userRole = localStorage.getItem("role");
 
@@ -56,6 +60,11 @@ const Component: React.FC = () => {
   useEffect(() => {
     fetchBlogs();
   }, [userRole]);
+
+  // ✅ Logic to filter blogs based on the selected tab
+  const filteredBlogs = blogs.filter(blog => 
+    (blog.category || "One Time Activity") === activeTab
+  );
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -83,9 +92,8 @@ const Component: React.FC = () => {
 
   return (
     <BlogContainer>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Box>
-          {/* <Typography variant="h4Bold" color="primary">Latest Updates</Typography> */}
           <Typography variant="h1Bold">Events & Activity Blogs</Typography>
         </Box>
         {userRole && (
@@ -99,14 +107,30 @@ const Component: React.FC = () => {
           </Button>
         )}
       </Box>
+
+      {/* ✅ NEW: Segregation Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(_, newValue) => setActiveTab(newValue)} 
+          textColor="primary"
+          indicatorColor="primary"
+          centered
+        >
+          <Tab label="One Time Activity" value="One Time Activity" sx={{ fontWeight: 'bold' }} />
+          <Tab label="Regular Activities" value="Regular Activities" sx={{ fontWeight: 'bold' }} />
+        </Tabs>
+      </Box>
       
       <BlogGrid>
-        {blogs.length === 0 ? (
-          <Typography variant="h3" sx={{ mt: 4, textAlign: 'center', width: '100%' }}>
-            No events found.
-          </Typography>
+        {filteredBlogs.length === 0 ? (
+          <Box sx={{ width: '100%', py: 10, textAlign: 'center' }}>
+            <Typography variant="h3" color="textSecondary">
+              No {activeTab.toLowerCase()} found.
+            </Typography>
+          </Box>
         ) : (
-          blogs.map((blog) => (
+          filteredBlogs.map((blog) => (
             <BlogCard key={blog._id} sx={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
               
               {userRole === "superadmin" && (
@@ -129,7 +153,6 @@ const Component: React.FC = () => {
               )}
 
               <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                {/* ✅ FIX: Title Overflow handled with line clamping */}
                 <Typography 
                   variant="h3Bold" 
                   color="primary" 
@@ -139,7 +162,7 @@ const Component: React.FC = () => {
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    minHeight: '3.6rem', // Ensures card heights stay consistent
+                    minHeight: '3.6rem',
                     lineHeight: '1.8rem'
                   }}
                 >

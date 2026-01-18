@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { 
-  Container, TextField, Button, Typography, Box, Paper, Grid, Alert, CircularProgress 
+  Container, TextField, Button, Typography, Box, Paper, Grid, Alert, CircularProgress, MenuItem 
 } from "@mui/material";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const AdminForm: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // For path-based ID if you use /blog/edit/:id
+  const { id } = useParams<{ id: string }>();
   const location = useLocation();
   
-  // Check if ID is passed via Query String (e.g., /blog/write?edit=123)
   const queryParams = new URLSearchParams(location.search);
   const editId = id || queryParams.get("edit");
 
@@ -22,21 +21,20 @@ const AdminForm: React.FC = () => {
     district: "",
     contactPerson: "",
     designation: "",
-    phoneNumber: ""
+    phoneNumber: "",
+    category: "One Time Activity" // ✅ Initializing with the exact name
   });
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // ✅ EFFECT: Fetch data if in Edit Mode
   useEffect(() => {
     if (editId) {
       setFetching(true);
       fetch(`http://localhost:5001/api/blogs/${editId}`)
         .then((res) => res.json())
         .then((data) => {
-          // Format date to YYYY-MM-DD for the date input
           const formattedDate = data.startDate ? new Date(data.startDate).toISOString().split('T')[0] : "";
           
           setFormData({
@@ -47,7 +45,8 @@ const AdminForm: React.FC = () => {
             district: data.district || "",
             contactPerson: data.contactPerson || "",
             designation: data.designation || "",
-            phoneNumber: data.phoneNumber || ""
+            phoneNumber: data.phoneNumber || "",
+            category: data.category || "One Time Activity" // ✅ Load existing category
           });
           setFetching(false);
         })
@@ -70,8 +69,6 @@ const AdminForm: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      
-      // ✅ Logic: Use PUT/PATCH for edit, POST for new
       const method = editId ? "PATCH" : "POST";
       const url = editId 
         ? `http://localhost:5001/api/blogs/${editId}` 
@@ -100,6 +97,15 @@ const AdminForm: React.FC = () => {
     }
   };
 
+  // ✅ SX Style helper for visibility
+  const textFieldStyles = {
+    "& .MuiInputBase-input": { color: "black !important" },
+    "& .MuiInputLabel-root": { color: "black !important" },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": { borderColor: "primary.main" }
+    }
+  };
+
   if (fetching) return <Box display="flex" justifyContent="center" py={10}><CircularProgress /></Box>;
 
   return (
@@ -113,10 +119,27 @@ const AdminForm: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            {/* ✅ NEW: Dropdown for One Time vs Regular Activity */}
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                label="Type of Activity"
+                required
+                value={formData.category}
+                onChange={e => handleChange("category", e.target.value)}
+                sx={textFieldStyles}
+              >
+                <MenuItem value="One Time Activity">One Time Activity</MenuItem>
+                <MenuItem value="Regular Activities">Regular Activities</MenuItem>
+              </TextField>
+            </Grid>
+
             <Grid item xs={12}>
               <TextField
                 fullWidth label="Event Title" required
                 value={formData.title} onChange={e => handleChange("title", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -124,6 +147,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth label="Image URL" placeholder="https://..."
                 value={formData.imageUrl} onChange={e => handleChange("imageUrl", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -131,6 +155,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth type="date" label="Start Date" InputLabelProps={{ shrink: true }}
                 value={formData.startDate} onChange={e => handleChange("startDate", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -138,6 +163,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth label="District"
                 value={formData.district} onChange={e => handleChange("district", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -145,6 +171,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth label="Contact Person"
                 value={formData.contactPerson} onChange={e => handleChange("contactPerson", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -152,6 +179,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth label="Designation"
                 value={formData.designation} onChange={e => handleChange("designation", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -159,6 +187,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth label="Phone Number"
                 value={formData.phoneNumber} onChange={e => handleChange("phoneNumber", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
 
@@ -166,6 +195,7 @@ const AdminForm: React.FC = () => {
               <TextField
                 fullWidth multiline rows={6} label="Full Description" required
                 value={formData.content} onChange={e => handleChange("content", e.target.value)}
+                sx={textFieldStyles}
               />
             </Grid>
           </Grid>
